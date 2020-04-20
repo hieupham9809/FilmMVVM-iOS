@@ -8,6 +8,7 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
@@ -17,6 +18,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+//        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+//        let mainVC = storyBoard.instantiateViewController(withIdentifier: "mainVC") as! MainViewController
+//        let mainViewModel = MainViewModel()
+//        mainVC.bindViewModel(to: mainViewModel)
+//
+//        let navigationController = UINavigationController(rootViewController: mainVC)
+        let tabBarVC = BaseTabBarViewController()
+        self.window = self.window ?? UIWindow()
+        self.window?.rootViewController = tabBarVC
+        self.window!.makeKeyAndVisible()
         guard let _ = (scene as? UIWindowScene) else { return }
     }
 
