@@ -28,6 +28,7 @@ struct LoginViewModel {
     
     func login(username : String, password : String){
         print("start loginning")
+        self.loading.accept(true)
         self.userRepository.createSessionKey(username: username, password: password)
             .subscribe(
                 onNext: { (sessionResponse : CreateSessionResponse)->Void in
@@ -51,7 +52,8 @@ struct LoginViewModel {
                 onNext: {
                     self.loading.accept(false)
                     self.userInfo.accept($0)
-                    
+                    let isSuccess = KeychainWrapper.standard.set($0.id, forKey: Constants.keyAccessUserId)
+                    print("save user account id \(isSuccess)")
                 
             },
                 onError: {

@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import SwiftKeychainWrapper
 
 enum Mode {
     case normal
@@ -17,6 +18,7 @@ enum Mode {
 
 class MainViewModel {
     let movieList : BehaviorRelay<[Movie]> = BehaviorRelay(value: [])
+    let userRepository = UserRepository()
     var currentPage = 0
     var totalPages = 1
     var totalResults = 0
@@ -57,6 +59,7 @@ extension MainViewModel {
         let repository = MovieRepository()
         repository.getMovies(input: request).subscribe(onNext: { movieResponse in
             self.movieList.accept(self.movieList.value + movieResponse.movies)
+            print("return \(movieResponse.movies.count) items")
             self.totalPages = movieResponse.totalPages
             self.currentPage = movieResponse.currentPage
             self.totalResults = movieResponse.totalResults
@@ -65,7 +68,10 @@ extension MainViewModel {
         
        
     }
-    
+    func requestMarkFavoriteForItem(isAdd : Bool, id : Int)->Observable<MarkFavoriteResponse>{
+        
+        return userRepository.requestMarkFavorite(isAdd: isAdd, id: id)
+    }
     func getMovieSearchList(keywords : String){
         // if current mode is .normal, then reset all state
         switch self.current_mode {

@@ -9,7 +9,29 @@
 import UIKit
 import Kingfisher
 
+extension UIImageView {
+  func setImageColor(color: UIColor) {
+    let templateImage = self.image?.withRenderingMode(.alwaysTemplate)
+    self.image = templateImage
+    self.tintColor = color
+  }
+}
+
 class MovieCell: UITableViewCell {
+    var id : Int?
+    var likeIconActive = UIImage(named: "like-icon")
+    var likeIconInActive = UIImage(named: "like-icon-inactive")
+    var isLike : Bool = false {
+        didSet {
+            
+            if isLike {
+                likeButton.setImage(likeIconActive, for: .normal)
+            } else {
+                likeButton.setImage(likeIconInActive, for: .normal)
+            }
+        }
+    }
+    weak var parentVC : BaseViewController! = nil
     let margin : CGFloat = 10.0
     var thumbnail : UIImageView = {
         var thumb = UIImageView()
@@ -33,6 +55,14 @@ class MovieCell: UITableViewCell {
         return label
     }()
     
+    var likeButton : UIButton = {
+        var btn = UIButton()
+        
+        btn.setImage(UIImage(named: "like-icon-inactive"), for: .normal)
+        
+        return btn
+    }()
+    
     override var frame: CGRect{
         didSet {
             guard frame.size != oldValue.size else {
@@ -46,16 +76,37 @@ class MovieCell: UITableViewCell {
             self.title.frame = CGRect(
                 x: self.thumbnail.frame.maxX + self.margin,
                 y: 0,
-                width: frame.width - self.thumbnail.frame.size.width - 2 * self.margin,
+                width: frame.width - self.thumbnail.frame.size.width - 5 * self.margin,
                 height: 30.0)
+            
             self.descrpt.frame = CGRect(
                 x: self.title.frame.minX,
                 y: self.title.frame.maxY,
                 width: self.title.frame.size.width,
                 height: 40.0 )
+            self.likeButton.frame = CGRect(
+                x: self.title.frame.maxX,
+                y: self.descrpt.frame.minY,
+                width: 20,
+                height: 20
+            )
         }
     }
-    
+    @objc func toggleLikeState(sender: UIButton){
+        print("like \(self.id ?? 0)")
+        self.isLike = !self.isLike
+        self.favoriteListHandleForItem(isAdd: self.isLike)
+    }
+    func favoriteListHandleForItem(isAdd : Bool){
+        // MARK: create request
+//        print("item \(self.id) isAdd: \(isAdd)")
+        guard let id = self.id, let parent = self.parentVC else {return}
+        
+        parent.markItemAsFavorite(isAdd: isAdd, id: id){ isSuccess in
+            self.isLike = isSuccess ? self.isLike : !self.isLike
+        }
+        
+    }
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -63,6 +114,8 @@ class MovieCell: UITableViewCell {
         self.contentView.addSubview(thumbnail)
         self.contentView.addSubview(title)
         self.contentView.addSubview(descrpt)
+        self.contentView.addSubview(likeButton)
+        likeButton.addTarget(self, action: #selector(self.toggleLikeState(sender:)), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -77,6 +130,15 @@ class MovieCell: UITableViewCell {
         self.thumbnail.kf.setImage(with: URL(string: URLs.baseImageUrl +  movie.backDropPath))
         self.title.text = movie.title
         self.descrpt.text = movie.overview
+        self.id = movie.id
+        
+        if (self.parentVC is UserFavoriteListViewController){
+            self.isLike = true
+        } else {
+            self.isLike = false
+        }
+        
+        
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

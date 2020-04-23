@@ -48,7 +48,7 @@ struct APIService {
                     switch response.result {
                     case .success(let value):
                         if let statusCode = response.response?.statusCode {
-                            if statusCode == 200 {
+                            if statusCode >= 200 && statusCode < 300 {
                                 if let object = Mapper<T>().map(JSONObject: value) {
 //                                    print(value)
                                     observer.onNext(object)

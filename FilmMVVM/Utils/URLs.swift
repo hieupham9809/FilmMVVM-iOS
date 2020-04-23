@@ -22,7 +22,9 @@ struct URLs {
     public static var createAuthenToken = APIBaseUrl + "/authentication/token/new"
     public static var createAuthenSession = APIBaseUrl + "/authentication/session/new"
     public static var validateAuthenToken = APIBaseUrl + "/authentication/token/validate_with_login"
-    
+    public static var deleteSession = APIBaseUrl + "/authentication/session"
     // MARK: ACCOUNT
     public static var getAccountInfo = APIBaseUrl + "/account"
+    public static var getFavoriteMovieList = APIBaseUrl + "/account/{id}/favorite/movies"
+    public static var markFavorite = APIBaseUrl + "/account/{id}/favorite"
 }

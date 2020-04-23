@@ -13,6 +13,7 @@ import RxCocoa
 class LoginViewController: UIViewController, BindableType {
     var viewModel: LoginViewModel!
     let disposeBag = DisposeBag()
+    let spinner = SpinnerViewController()
     var usernameLabel : UILabel = {
        let label = UILabel()
         label.text = "Username:"
@@ -110,10 +111,27 @@ class LoginViewController: UIViewController, BindableType {
                 
             }
             print("gonna show user view controller")
+            let userFavoriteVC = self.storyboard?.instantiateViewController(withIdentifier: "UserFavorite") as! UserFavoriteListViewController
+            let userFavoriteViewModel = UserFavoriteListViewModel(id: userInfo.id)
+            
+            userFavoriteVC.bindViewModel(to: userFavoriteViewModel)
+            self.navigationController?.pushViewController(userFavoriteVC, animated: true)
+//            self.present(userFavoriteVC, animated: true, completion: nil)
             }).disposed(by: disposeBag)
+        
         viewModel.loading.asObservable().subscribe(onNext: {(isLoading : Bool)->Void in
             print("show loading indicator : \(isLoading)")
-            
+            if (isLoading){
+                self.addChild(self.spinner)
+                self.spinner.view.frame = self.view.frame
+                self.view.addSubview(self.spinner.view)
+                self.spinner.didMove(toParent: self)
+                
+            } else {
+                self.spinner.willMove(toParent: nil)
+                self.spinner.view.removeFromSuperview()
+                self.spinner.removeFromParent()
+            }
             }).disposed(by: disposeBag)
         
     }

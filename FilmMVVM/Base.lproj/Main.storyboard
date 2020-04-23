@@ -53,6 +53,21 @@
             </objects>
             <point key="canvasLocation" x="761" y="-564"/>
         </scene>
+        <!--User Favorite List View Controller-->
+        <scene sceneID="VEK-be-5JG">
+            <objects>
+                <viewController storyboardIdentifier="UserFavorite" id="aFO-Mb-KQC" customClass="UserFavoriteListViewController" customModule="FilmMVVM" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="id1-w4-YHY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="zsc-0v-5wx"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Tr-4O-XBY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="864" y="101"/>
+        </scene>
         <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>

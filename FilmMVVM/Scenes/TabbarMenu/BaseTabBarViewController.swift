@@ -28,6 +28,7 @@ class BaseTabBarViewController: UITabBarController, UITabBarControllerDelegate {
         let loginViewModel = LoginViewModel()
         loginVC.bindViewModel(to: loginViewModel)
         
+        
         let mainNavigationController = UINavigationController(rootViewController: mainVC)
         let loginNavigationController = UINavigationController(rootViewController: loginVC)
         

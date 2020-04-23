@@ -1,8 +1,8 @@
 //
-//  MainViewController.swift
+//  UserFavoriteListViewController.swift
 //  FilmMVVM
 //
-//  Created by HieuPM on 4/13/20.
+//  Created by HieuPM on 4/20/20.
 //  Copyright © 2020 HieuPM. All rights reserved.
 //
 
@@ -13,61 +13,64 @@ import RxCocoa
 
 
 
-class MainViewController: BaseViewController, BindableType, UITableViewDelegate  {
+class UserFavoriteListViewController: BaseViewController, BindableType, UITableViewDelegate {
     var tableView : UITableView!
 //    let searchController = UISearchController()
-    let searchBar = UISearchBar()
-    var viewModel : MainViewModel!
+    let refreshControl = UIRefreshControl()
+    var viewModel : UserFavoriteListViewModel!
     let rowIndexToLoadMore = 1
-    let throttleIntervalMiliseconds = 3000
+    
     let disposeBag = DisposeBag()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = "Discovery"
-        self.navigationItem.titleView = searchBar
+        self.navigationItem.title = "My Favorite"
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(self.logoutHandle(sender:)))
 //        searchController.hidesNavigationBarDuringPresentation = false
         let currentFrame = self.view.frame
         self.tableView = UITableView(frame: CGRect(x: 0, y: 0, width: currentFrame.width, height: currentFrame.height))
         self.tableView.register(MovieCell.self
             , forCellReuseIdentifier: "MovieCell")
-        
         self.tableView.rx.setDelegate(self).disposed(by: disposeBag)
-        
+        if #available(iOS 10.0, *){
+            tableView.refreshControl = refreshControl
+        } else {
+            tableView.addSubview(refreshControl)
+        }
+        refreshControl.attributedTitle = NSAttributedString(string: "Loading data...")
+        refreshControl.addTarget(self, action: #selector(self.refreshData(sender:)), for: .valueChanged)
         
         self.view.addSubview(tableView)
         // Do any additional setup after loading the view.
     }
-    
+    @objc func refreshData(sender: Any){
+        guard let viewModel = self.viewModel else {return}
+        viewModel.resetState()
+        viewModel.getMovieList()
+    }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
-    func alertAndForceToLogin(){
-        let alert = UIAlertController(title: "Must Login!", message: "You must login to use this function!", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {(alert : UIAlertAction!) in
-            self.tabBarController?.selectedIndex = 1
-        }))
-        self.present(alert, animated: true, completion: nil)
+    func relogin(){
+        self.navigationController?.popViewController(animated: true)
     }
-    override func markItemAsFavorite(isAdd: Bool, id : Int, onCompleted: @escaping (Bool)->Void){
-        guard let viewModel = self.viewModel else {return}
+    override func markItemAsFavorite(isAdd : Bool, id : Int, onCompleted: @escaping (Bool)->Void){
+        guard let viewModel = self.viewModel else {
+            return
+        }
+        print("request here")
         viewModel.requestMarkFavoriteForItem(isAdd: isAdd, id: id).subscribe(
             onNext:{(markFavoriteResponse : MarkFavoriteResponse) in
                 print("success: \(markFavoriteResponse.statusMessage)")
-                let message = isAdd ? "Add to favorite " : "Remove from favorite"
-                self.showToast(message: "\(message) success!", font: UIFont.systemFont(ofSize: 18))
                 onCompleted(true)
-            
         },
             onError: { error in
                 print("error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")")
-                self.showToast(message: "error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")", font: UIFont.systemFont(ofSize: 18))
                 onCompleted(false)
                 switch error {
                 case BaseError.apiFailure(let apiError):
-                    if (apiError?.statusCode == ErrorStatusCode.not_authen.rawValue){
-//                        self.tabBarController?.selectedIndex = 1
-                        self.alertAndForceToLogin()
+                    if apiError?.statusCode == ErrorStatusCode.not_authen.rawValue {
+                        self.relogin()
                     }
                 default:
                     break
@@ -75,13 +78,22 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
                 
         }).disposed(by: self.disposeBag)
     }
-    
-    
+    @objc func logoutHandle(sender: UIButton){
+        guard let viewModel = self.viewModel else {return}
+        viewModel.logout().subscribe(
+            onNext: { (logoutResponse : LogoutResponse) in
+                print("logout success: \(logoutResponse.success)")
+                self.navigationController?.popViewController(animated: true)
+        }, onError: {
+            print("error: \(($0 as? BaseError)?.errorMessage ?? "cannot unwrap error")")
+            
+            }).disposed(by: disposeBag)
+    }
     func bindViewModel() {
         // bind data get from MainViewModel to View (TableView, ... )
         guard let viewModel = self.viewModel else {return}
         guard let tableView = self.tableView else {return}
-//        viewModel.getMovieList()
+        viewModel.getMovieList()
         viewModel.movieList.bind(to: tableView.rx.items(cellIdentifier: "MovieCell", cellType: MovieCell.self)){row, movie, cell in
             cell.parentVC = self
             cell.setContentForCell(movie: movie)
@@ -107,39 +119,29 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
         tableView.rx.willDisplayCell
         .subscribe(onNext: {
             guard self.viewModel.movieList.value.count - $0.indexPath.row == self.rowIndexToLoadMore else {return}
-//            self.viewModel.getMovieList()
-            switch self.viewModel.current_mode {
-            case .normal:
-                self.viewModel.getMovieList()
-            case .search(let keywords):
-                self.viewModel.getMovieSearchList(keywords: keywords)
+            self.viewModel.getMovieList()
             
-            }
             print("movies count: \(self.viewModel.movieList.value.count)")
             print("current index: \($0.indexPath.row)")
             }).disposed(by: disposeBag)
         
-        searchBar.rx.text
-            .observeOn(MainScheduler.asyncInstance)
-            .distinctUntilChanged()
-            .throttle(.milliseconds(throttleIntervalMiliseconds), scheduler: MainScheduler.instance)
-            .map {
+        
+        // MARK: Loading indicator
+        viewModel.isLoading.asObservable().subscribe(
+            onNext: {
+                if ($0){
+                    
+                } else {
+                    self.refreshControl.endRefreshing()
+                }
                 
-                return $0?.trimmingCharacters(in: .whitespacesAndNewlines)
-        }.subscribe(onNext: {
-            guard let keyword = $0 else {return}
-            self.viewModel.resetState()
-            
-            if $0 == "" {
-                self.viewModel.getMovieList()
-            } else {
-                self.viewModel.getMovieSearchList(keywords: keyword)
-            }
-        }).disposed(by: disposeBag)
+        },
+            onError: {error in
+                print("Error from isLoading observable")
+                
+            }).disposed(by: disposeBag)
     }
     
     
     
 }
-
-

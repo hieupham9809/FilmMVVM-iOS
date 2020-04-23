@@ -25,6 +25,14 @@ class MovieRepository : MovieRepositoryType {
                 return response
         }
     }
+    
+    func getFavoriteMovies(input: UserFavoriteMovieListRequest)-> Observable<MovieResponse> {
+        api.request(input: input)
+            .map{(response: MovieResponse)->MovieResponse in
+                return response
+        }
+    }
+    
     func getSearchMovies(input: MovieSearchRequest) -> Observable<MovieResponse> {
         api.request(input: input)
             .map{(response: MovieResponse)->MovieResponse in

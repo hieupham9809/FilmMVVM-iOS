@@ -8,7 +8,10 @@
 
 import Foundation
 import ObjectMapper
-
+enum ErrorStatusCode : Int {
+    case not_found = 34
+    case not_authen = 3
+}
 class ErrorResponse: Mappable {
     var statusCode: Int?
     var message: String?
@@ -16,7 +19,11 @@ class ErrorResponse: Mappable {
     required init?(map: Map) {
         mapping(map: map)
     }
-    
+    init() {
+        statusCode = 3
+        message = "not authen"
+        success = false
+    }
     func mapping(map: Map) {
         statusCode <- map["status_code"]
         message <- map["status_message"]

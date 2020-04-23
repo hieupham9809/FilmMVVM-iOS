@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import SwiftKeychainWrapper
 
 final class UserRepository {
     let api = APIService.share
@@ -63,5 +64,45 @@ final class UserRepository {
         return api.request(input: userInfoRequest).map {(userInfo : User)->User in
              userInfo
         }
+    }
+    
+    func logout()->Observable<LogoutResponse>{
+        if let oldSessionKey = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession){
+            let logoutRequest = LogoutRequest(sessionId: oldSessionKey)
+            return api.request(input: logoutRequest).map{(logoutResponse : LogoutResponse) in
+                return logoutResponse
+            }
+        }
+        return Observable.of(LogoutResponse())
+        
+    }
+    
+    func requestMarkFavorite(isAdd : Bool, id : Int)->Observable<MarkFavoriteResponse>{
+//        let markFavorite = MarkFavorite
+        return Observable<MarkFavoriteResponse>.create{observer in
+            if let oldSessionKey = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession), let userId = KeychainWrapper.standard.integer(forKey: Constants.keyAccessUserId) {
+                    
+                let markFavoriteRequest = MarkFavorite(accountId: userId, sessionId: oldSessionKey, mediaId: id, favorite: isAdd)
+                self.api.request(input: markFavoriteRequest).subscribe(
+                    onNext: {(markResponse : MarkFavoriteResponse)->Void in
+                        print("onNext from user repository")
+                        observer.onNext(markResponse)
+                        
+                        
+                }, onError: {
+                    print("onError from user repository")
+                    observer.onError($0)
+                },
+                   onCompleted: {
+                    print("onCompleted from user repository")
+                }).disposed(by: self.disposeBag)
+            } else {
+                observer.onError(BaseError.apiFailure(error: ErrorResponse()))
+            }
+            
+            return Disposables.create()
+            
+        }
+        
     }
 }
