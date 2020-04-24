@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E06C4152452986E00061316 /* UserPlaylistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4142452986E00061316 /* UserPlaylistsViewController.swift */; };
+		5E06C4172452988200061316 /* UserPlaylistsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4162452988200061316 /* UserPlaylistsViewModel.swift */; };
+		5E06C41A2452A41000061316 /* PlaylistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4192452A41000061316 /* PlaylistTableViewCell.swift */; };
+		5E06C41C2452A7BB00061316 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C41B2452A7BB00061316 /* Playlist.swift */; };
+		5E06C4202452D7D500061316 /* GetCreatedPlaylistsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C41F2452D7D500061316 /* GetCreatedPlaylistsRequest.swift */; };
+		5E06C4222452DA9B00061316 /* GetCreatedPlaylistsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4212452DA9B00061316 /* GetCreatedPlaylistsResponse.swift */; };
+		5E06C4262452ECEC00061316 /* CreatePlaylistRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4252452ECEC00061316 /* CreatePlaylistRequest.swift */; };
+		5E06C4282452EE1200061316 /* CreatePlaylistResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E06C4272452EE1200061316 /* CreatePlaylistResponse.swift */; };
 		842C0E2A244ABB4E00FAEC07 /* CreateTokenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842C0E29244ABB4E00FAEC07 /* CreateTokenRequest.swift */; };
 		842C0E2C244ABDD800FAEC07 /* CreateSessionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842C0E2B244ABDD800FAEC07 /* CreateSessionRequest.swift */; };
 		842C0E2E244AC07300FAEC07 /* ValidateTokenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842C0E2D244AC07300FAEC07 /* ValidateTokenRequest.swift */; };
@@ -75,6 +83,14 @@
 		3EDB1C2F5D67E13A5961581B /* Pods_FilmMVVM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmMVVM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41B9C8F70614567BBAD56300 /* Pods-FilmMVVM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmMVVM.release.xcconfig"; path = "Target Support Files/Pods-FilmMVVM/Pods-FilmMVVM.release.xcconfig"; sourceTree = "<group>"; };
 		45E51128B7AAF730E82B2FE8 /* Pods-FilmMVVM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmMVVM.debug.xcconfig"; path = "Target Support Files/Pods-FilmMVVM/Pods-FilmMVVM.debug.xcconfig"; sourceTree = "<group>"; };
+		5E06C4142452986E00061316 /* UserPlaylistsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPlaylistsViewController.swift; sourceTree = "<group>"; };
+		5E06C4162452988200061316 /* UserPlaylistsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPlaylistsViewModel.swift; sourceTree = "<group>"; };
+		5E06C4192452A41000061316 /* PlaylistTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewCell.swift; sourceTree = "<group>"; };
+		5E06C41B2452A7BB00061316 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
+		5E06C41F2452D7D500061316 /* GetCreatedPlaylistsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCreatedPlaylistsRequest.swift; sourceTree = "<group>"; };
+		5E06C4212452DA9B00061316 /* GetCreatedPlaylistsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCreatedPlaylistsResponse.swift; sourceTree = "<group>"; };
+		5E06C4252452ECEC00061316 /* CreatePlaylistRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePlaylistRequest.swift; sourceTree = "<group>"; };
+		5E06C4272452EE1200061316 /* CreatePlaylistResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePlaylistResponse.swift; sourceTree = "<group>"; };
 		842C0E29244ABB4E00FAEC07 /* CreateTokenRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTokenRequest.swift; sourceTree = "<group>"; };
 		842C0E2B244ABDD800FAEC07 /* CreateSessionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateSessionRequest.swift; sourceTree = "<group>"; };
 		842C0E2D244AC07300FAEC07 /* ValidateTokenRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateTokenRequest.swift; sourceTree = "<group>"; };
@@ -159,6 +175,42 @@
 				B2684D0960F18449C63223BA /* Pods_FilmMVVMTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5E06C4132452981900061316 /* UserPlayLists */ = {
+			isa = PBXGroup;
+			children = (
+				5E06C4182452A3E000061316 /* Cell */,
+				5E06C4142452986E00061316 /* UserPlaylistsViewController.swift */,
+				5E06C4162452988200061316 /* UserPlaylistsViewModel.swift */,
+			);
+			path = UserPlayLists;
+			sourceTree = "<group>";
+		};
+		5E06C4182452A3E000061316 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				5E06C4192452A41000061316 /* PlaylistTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		5E06C41D2452D78B00061316 /* Playlist */ = {
+			isa = PBXGroup;
+			children = (
+				5E06C41F2452D7D500061316 /* GetCreatedPlaylistsRequest.swift */,
+				5E06C4252452ECEC00061316 /* CreatePlaylistRequest.swift */,
+			);
+			path = Playlist;
+			sourceTree = "<group>";
+		};
+		5E06C41E2452D79500061316 /* Playlist */ = {
+			isa = PBXGroup;
+			children = (
+				5E06C4212452DA9B00061316 /* GetCreatedPlaylistsResponse.swift */,
+				5E06C4272452EE1200061316 /* CreatePlaylistResponse.swift */,
+			);
+			path = Playlist;
 			sourceTree = "<group>";
 		};
 		8178DB6F43AB5358295C4978 /* Pods */ = {
@@ -251,6 +303,7 @@
 				843296C8244459B600DE95D4 /* BaseModel.swift */,
 				843296CA244459DA00DE95D4 /* Movie.swift */,
 				8433EA4D244D99670037399A /* User.swift */,
+				5E06C41B2452A7BB00061316 /* Playlist.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -372,6 +425,7 @@
 		8433EA4F244D9C1D0037399A /* User */ = {
 			isa = PBXGroup;
 			children = (
+				5E06C41D2452D78B00061316 /* Playlist */,
 				8433EA50244D9C2C0037399A /* UserInfoRequest.swift */,
 				8433EA5B244DB7F80037399A /* UserFavoriteMovieListRequest.swift */,
 				8438C5D6244E96C500B9D749 /* MarkFavorite.swift */,
@@ -409,6 +463,7 @@
 		8438BEBD24499784003FC364 /* PersonalContent */ = {
 			isa = PBXGroup;
 			children = (
+				5E06C4132452981900061316 /* UserPlayLists */,
 				8433EA56244DB5190037399A /* UserFavoriteList */,
 				8438BEBE244997B5003FC364 /* Login */,
 			);
@@ -427,6 +482,7 @@
 		8438C5D8244E9BDF00B9D749 /* User */ = {
 			isa = PBXGroup;
 			children = (
+				5E06C41E2452D79500061316 /* Playlist */,
 				8438C5D9244E9BEB00B9D749 /* MarkFavoriteResponse.swift */,
 				8431AD87244FF6DF009DC2AA /* LogoutResponse.swift */,
 			);
@@ -602,6 +658,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				842C0E30244AC2EB00FAEC07 /* CreateAndValidateTokenResponse.swift in Sources */,
+				5E06C4172452988200061316 /* UserPlaylistsViewModel.swift in Sources */,
 				843296D224445C8A00DE95D4 /* MovieRepository.swift in Sources */,
 				843296C12444576200DE95D4 /* BaseRequest.swift in Sources */,
 				843296B52444446D00DE95D4 /* URLs.swift in Sources */,
@@ -611,11 +668,13 @@
 				8438C5DA244E9BEB00B9D749 /* MarkFavoriteResponse.swift in Sources */,
 				842C0E34244AC75200FAEC07 /* UserRepository.swift in Sources */,
 				843296E424447AF000DE95D4 /* MovieDetailViewController.swift in Sources */,
+				5E06C41A2452A41000061316 /* PlaylistTableViewCell.swift in Sources */,
 				8432968E24440E5B00DE95D4 /* AppDelegate.swift in Sources */,
 				8438BEC42449A7EB003FC364 /* MovieSearchRequest.swift in Sources */,
 				8432969024440E5B00DE95D4 /* SceneDelegate.swift in Sources */,
 				8431AD8A24502CCE009DC2AA /* BaseViewController.swift in Sources */,
 				843296CF24445BBA00DE95D4 /* MovieRequest.swift in Sources */,
+				5E06C4152452986E00061316 /* UserPlaylistsViewController.swift in Sources */,
 				8433EA51244D9C2C0037399A /* UserInfoRequest.swift in Sources */,
 				8438BEC224499848003FC364 /* LoginViewModel.swift in Sources */,
 				8433EA58244DB67B0037399A /* UserFavoriteListViewController.swift in Sources */,
@@ -636,14 +695,19 @@
 				8435ACC82446FDE600E30252 /* MovieCell.swift in Sources */,
 				842C0E2E244AC07300FAEC07 /* ValidateTokenRequest.swift in Sources */,
 				8431AD8D24505DF5009DC2AA /* SpinnerViewController.swift in Sources */,
+				5E06C41C2452A7BB00061316 /* Playlist.swift in Sources */,
 				843296DA2444699A00DE95D4 /* MainViewModel.swift in Sources */,
 				842C0E2A244ABB4E00FAEC07 /* CreateTokenRequest.swift in Sources */,
 				843296CB244459DA00DE95D4 /* Movie.swift in Sources */,
 				843296BA244452B700DE95D4 /* APIService.swift in Sources */,
 				843296E224447AE200DE95D4 /* MovieDetailViewModel.swift in Sources */,
 				843296C72444582A00DE95D4 /* HTTPStatusCode.swift in Sources */,
+				5E06C4222452DA9B00061316 /* GetCreatedPlaylistsResponse.swift in Sources */,
 				842C0E2C244ABDD800FAEC07 /* CreateSessionRequest.swift in Sources */,
 				843296C32444579600DE95D4 /* BaseError.swift in Sources */,
+				5E06C4282452EE1200061316 /* CreatePlaylistResponse.swift in Sources */,
+				5E06C4202452D7D500061316 /* GetCreatedPlaylistsRequest.swift in Sources */,
+				5E06C4262452ECEC00061316 /* CreatePlaylistRequest.swift in Sources */,
 				8438BEC0244997DA003FC364 /* LoginViewController.swift in Sources */,
 				843296B32444442300DE95D4 /* Constant.swift in Sources */,
 			);

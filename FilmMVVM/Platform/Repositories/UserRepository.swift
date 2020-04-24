@@ -105,4 +105,53 @@ final class UserRepository {
         }
         
     }
+    
+    func getCreatedPlaylist(page : Int)->Observable<GetCreatedPlaylistsResponse>{
+        return Observable<GetCreatedPlaylistsResponse>.create{observer in
+            if let oldSessionKey = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession), let userId = KeychainWrapper.standard.integer(forKey: Constants.keyAccessUserId) {
+                let getCreatedPlaylistRequest = GetCreatedPlaylistsRequest(sessionId: oldSessionKey, page: page, accountId: userId)
+                self.api.request(input: getCreatedPlaylistRequest).subscribe(
+                    onNext: {(playlistResponse : GetCreatedPlaylistsResponse)->Void in
+                        observer.onNext(playlistResponse)
+                    },
+                    onError: { error in
+                        observer.onError(error)
+                        
+                    },
+                    onCompleted: {
+                        observer.onCompleted()
+                    }
+                    
+                ).disposed(by: self.disposeBag)
+                
+            } else {
+                observer.onError(BaseError.apiFailure(error: ErrorResponse()))
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func createPlaylist(name : String, description : String)->Observable<CreatePlaylistResponse>{
+        return Observable<CreatePlaylistResponse>.create{observer in
+            if let sessionKey = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession){
+                let createPlaylistRequest = CreatePlaylistRequest(sessionId: sessionKey, name: name, description: description)
+                self.api.request(input: createPlaylistRequest).subscribe(
+                    onNext: {(createPlaylistResponse: CreatePlaylistResponse)->Void in
+                    observer.onNext(createPlaylistResponse)
+                    
+                    },
+                    onError: {
+                        observer.onError($0)
+                },
+                    onCompleted: {
+                        observer.onCompleted()
+                }).disposed(by: self.disposeBag)
+            } else {
+                observer.onError(BaseError.apiFailure(error: ErrorResponse()))
+            }
+            return Disposables.create()
+        }
+        
+    }
 }

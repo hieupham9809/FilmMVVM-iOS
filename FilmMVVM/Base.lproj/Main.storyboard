@@ -38,6 +38,21 @@
             </objects>
             <point key="canvasLocation" x="16" y="-564"/>
         </scene>
+        <!--User Playlists View Controller-->
+        <scene sceneID="BJf-MV-wle">
+            <objects>
+                <viewController storyboardIdentifier="PlaylistVC" id="3cy-Al-Hfg" customClass="UserPlaylistsViewController" customModule="FilmMVVM" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="fS1-q7-HXw">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="fgU-Xd-xN2"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="W5L-wV-Pbv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="720" y="-1357"/>
+        </scene>
         <!--Movie Detail View Controller-->
         <scene sceneID="k7y-ax-kwS">
             <objects>

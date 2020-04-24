@@ -17,6 +17,7 @@ class UserFavoriteListViewModel {
     let sessionId : String?
     let isLoading : BehaviorRelay<Bool> = BehaviorRelay(value: false)
     let movieList : BehaviorRelay<[Movie]> = BehaviorRelay(value: [])
+    let userRepository = UserRepository()
     var currentPage = 0
     var totalPages = 1
     var totalResults = 0
@@ -53,14 +54,17 @@ extension UserFavoriteListViewModel {
         let request = UserFavoriteMovieListRequest(accountId: self.id, sessionId: sessionId, page: self.currentPage)
         let repository = MovieRepository()
         
-        repository.getFavoriteMovies(input: request).subscribe(onNext: { movieResponse in
-            self.movieList.accept(self.movieList.value + movieResponse.movies)
-//            print(self.movieList.value)
-            self.totalPages = movieResponse.totalPages
-            self.currentPage = movieResponse.currentPage
-            self.totalResults = movieResponse.totalResults
-            self.isLoading.accept(false)
+        repository.getFavoriteMovies(input: request).subscribe(
+            onNext: { movieResponse in
+                self.movieList.accept(self.movieList.value + movieResponse.movies)
+    //            print(self.movieList.value)
+                self.totalPages = movieResponse.totalPages
+                self.currentPage = movieResponse.currentPage
+                self.totalResults = movieResponse.totalResults
+                self.isLoading.accept(false)
             
+        }, onError: {error in
+            self.isLoading.accept(false)
         }).disposed(by: self.disposeBag)
         
        
@@ -72,7 +76,7 @@ extension UserFavoriteListViewModel {
         
     }
     func requestMarkFavoriteForItem(isAdd : Bool, id : Int)->Observable<MarkFavoriteResponse>{
-        let userRepository = UserRepository()
+        
         return userRepository.requestMarkFavorite(isAdd: isAdd, id: id)
     }
     

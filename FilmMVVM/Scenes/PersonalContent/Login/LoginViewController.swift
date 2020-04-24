@@ -111,11 +111,14 @@ class LoginViewController: UIViewController, BindableType {
                 
             }
             print("gonna show user view controller")
-            let userFavoriteVC = self.storyboard?.instantiateViewController(withIdentifier: "UserFavorite") as! UserFavoriteListViewController
-            let userFavoriteViewModel = UserFavoriteListViewModel(id: userInfo.id)
-            
-            userFavoriteVC.bindViewModel(to: userFavoriteViewModel)
-            self.navigationController?.pushViewController(userFavoriteVC, animated: true)
+//            let userFavoriteVC = self.storyboard?.instantiateViewController(withIdentifier: "UserFavorite") as! UserFavoriteListViewController
+//            let userFavoriteViewModel = UserFavoriteListViewModel(id: userInfo.id)
+//
+//            userFavoriteVC.bindViewModel(to: userFavoriteViewModel)
+            let userPlaylistVC = self.storyboard?.instantiateViewController(withIdentifier: "PlaylistVC") as! UserPlaylistsViewController
+            let userPlaylistViewModel = UserPlaylistsViewModel(userId : userInfo.id)
+            userPlaylistVC.bindViewModel(to: userPlaylistViewModel)
+            self.navigationController?.pushViewController(userPlaylistVC, animated: true)
 //            self.present(userFavoriteVC, animated: true, completion: nil)
             }).disposed(by: disposeBag)
         

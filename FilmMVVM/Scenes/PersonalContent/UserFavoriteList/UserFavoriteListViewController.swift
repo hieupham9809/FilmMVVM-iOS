@@ -14,9 +14,9 @@ import RxCocoa
 
 
 class UserFavoriteListViewController: BaseViewController, BindableType, UITableViewDelegate {
-    var tableView : UITableView!
+    var tableView = UITableView()
 //    let searchController = UISearchController()
-    let refreshControl = UIRefreshControl()
+    
     var viewModel : UserFavoriteListViewModel!
     let rowIndexToLoadMore = 1
     
@@ -26,24 +26,28 @@ class UserFavoriteListViewController: BaseViewController, BindableType, UITableV
         super.viewDidLoad()
         self.navigationItem.title = "My Favorite"
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(self.logoutHandle(sender:)))
+        
 //        searchController.hidesNavigationBarDuringPresentation = false
         let currentFrame = self.view.frame
-        self.tableView = UITableView(frame: CGRect(x: 0, y: 0, width: currentFrame.width, height: currentFrame.height))
+        self.tableView.frame = CGRect(x: 0, y: 0, width: currentFrame.width, height: currentFrame.height)
         self.tableView.register(MovieCell.self
             , forCellReuseIdentifier: "MovieCell")
         self.tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        
+//        refreshControl.addTarget(self, action: #selector(self.refreshData(sender:)), for: .valueChanged)
+        
+        self.view.addSubview(tableView)
+        // Do any additional setup after loading the view.
+    }
+    override func addRefreshControlToView() {
         if #available(iOS 10.0, *){
             tableView.refreshControl = refreshControl
         } else {
             tableView.addSubview(refreshControl)
         }
-        refreshControl.attributedTitle = NSAttributedString(string: "Loading data...")
-        refreshControl.addTarget(self, action: #selector(self.refreshData(sender:)), for: .valueChanged)
-        
-        self.view.addSubview(tableView)
-        // Do any additional setup after loading the view.
     }
-    @objc func refreshData(sender: Any){
+    @objc override func refreshData(sender: Any){
         guard let viewModel = self.viewModel else {return}
         viewModel.resetState()
         viewModel.getMovieList()
@@ -58,14 +62,17 @@ class UserFavoriteListViewController: BaseViewController, BindableType, UITableV
         guard let viewModel = self.viewModel else {
             return
         }
-        print("request here")
+        
         viewModel.requestMarkFavoriteForItem(isAdd: isAdd, id: id).subscribe(
             onNext:{(markFavoriteResponse : MarkFavoriteResponse) in
                 print("success: \(markFavoriteResponse.statusMessage)")
+                let message = isAdd ? "Add to favorite " : "Remove from favorite"
+                self.showToast(message: "\(message) success!", font: UIFont.systemFont(ofSize: 18))
                 onCompleted(true)
         },
             onError: { error in
                 print("error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")")
+                self.showToast(message: "error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")", font: UIFont.systemFont(ofSize: 18))
                 onCompleted(false)
                 switch error {
                 case BaseError.apiFailure(let apiError):
@@ -89,10 +96,11 @@ class UserFavoriteListViewController: BaseViewController, BindableType, UITableV
             
             }).disposed(by: disposeBag)
     }
+    
     func bindViewModel() {
         // bind data get from MainViewModel to View (TableView, ... )
         guard let viewModel = self.viewModel else {return}
-        guard let tableView = self.tableView else {return}
+        
         viewModel.getMovieList()
         viewModel.movieList.bind(to: tableView.rx.items(cellIdentifier: "MovieCell", cellType: MovieCell.self)){row, movie, cell in
             cell.parentVC = self

@@ -27,4 +27,8 @@ struct URLs {
     public static var getAccountInfo = APIBaseUrl + "/account"
     public static var getFavoriteMovieList = APIBaseUrl + "/account/{id}/favorite/movies"
     public static var markFavorite = APIBaseUrl + "/account/{id}/favorite"
+    
+    // MARK: PLAYLIST
+    public static var getCreatedList = APIBaseUrl + "/account/{id}/lists"
+    public static var createList = APIBaseUrl + "/list"
 }

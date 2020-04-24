@@ -17,11 +17,15 @@ enum Mode {
 }
 
 class MainViewModel {
+    
+    let isLoading : BehaviorRelay<Bool> = BehaviorRelay(value: false)
+    
     let movieList : BehaviorRelay<[Movie]> = BehaviorRelay(value: [])
-    let userRepository = UserRepository()
     var currentPage = 0
     var totalPages = 1
     var totalResults = 0
+    
+    let userRepository = UserRepository()
     let disposeBag = DisposeBag()
     var current_mode = Mode.normal
     
@@ -37,6 +41,7 @@ extension MainViewModel {
     
     // get Observable from MovieRepository and send to MainViewController
     func getMovieList(){
+        self.isLoading.accept(true)
         // if current mode is not .normal, then reset all state
         switch self.current_mode {
         case .search( _):
@@ -54,16 +59,22 @@ extension MainViewModel {
         }
         
         self.currentPage += 1
-        print("request more: ")
+        
         let request = MovieRequest(page: self.currentPage)
         let repository = MovieRepository()
-        repository.getMovies(input: request).subscribe(onNext: { movieResponse in
+        repository.getMovies(input: request).subscribe(
+            onNext: { movieResponse in
             self.movieList.accept(self.movieList.value + movieResponse.movies)
             print("return \(movieResponse.movies.count) items")
             self.totalPages = movieResponse.totalPages
             self.currentPage = movieResponse.currentPage
             self.totalResults = movieResponse.totalResults
+//                self.isLoading.accept(false)
             
+        }, onError:  {error in
+//            self.isLoading.accept(false)
+        }, onCompleted: {
+            self.isLoading.accept(false)
         }).disposed(by: self.disposeBag)
         
        

@@ -103,6 +103,7 @@ class MovieCell: UITableViewCell {
         guard let id = self.id, let parent = self.parentVC else {return}
         
         parent.markItemAsFavorite(isAdd: isAdd, id: id){ isSuccess in
+            
             self.isLike = isSuccess ? self.isLike : !self.isLike
         }
         

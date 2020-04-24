@@ -14,7 +14,7 @@ import RxCocoa
 
 
 class MainViewController: BaseViewController, BindableType, UITableViewDelegate  {
-    var tableView : UITableView!
+    var tableView = UITableView()
 //    let searchController = UISearchController()
     let searchBar = UISearchBar()
     var viewModel : MainViewModel!
@@ -28,7 +28,7 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
         self.navigationItem.titleView = searchBar
 //        searchController.hidesNavigationBarDuringPresentation = false
         let currentFrame = self.view.frame
-        self.tableView = UITableView(frame: CGRect(x: 0, y: 0, width: currentFrame.width, height: currentFrame.height))
+        self.tableView.frame = CGRect(x: 0, y: 0, width: currentFrame.width, height: currentFrame.height)
         self.tableView.register(MovieCell.self
             , forCellReuseIdentifier: "MovieCell")
         
@@ -38,7 +38,24 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
         self.view.addSubview(tableView)
         // Do any additional setup after loading the view.
     }
-    
+    override func addRefreshControlToView() {
+        if #available(iOS 10.0, *){
+            tableView.refreshControl = refreshControl
+        } else {
+            tableView.addSubview(refreshControl)
+        }
+    }
+    override func refreshData(sender: Any) {
+        guard let viewModel = self.viewModel else {return}
+        viewModel.resetState()
+        switch self.viewModel.current_mode {
+        case .normal:
+            self.viewModel.getMovieList()
+        case .search(let keywords):
+            self.viewModel.getMovieSearchList(keywords: keywords)
+        
+        }
+    }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
@@ -80,7 +97,7 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
     func bindViewModel() {
         // bind data get from MainViewModel to View (TableView, ... )
         guard let viewModel = self.viewModel else {return}
-        guard let tableView = self.tableView else {return}
+        
 //        viewModel.getMovieList()
         viewModel.movieList.bind(to: tableView.rx.items(cellIdentifier: "MovieCell", cellType: MovieCell.self)){row, movie, cell in
             cell.parentVC = self
@@ -136,6 +153,21 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
                 self.viewModel.getMovieSearchList(keywords: keyword)
             }
         }).disposed(by: disposeBag)
+        
+        // MARK: Loading indicator
+        viewModel.isLoading.asObservable().subscribe(
+            onNext: {
+                if ($0){
+                    
+                } else {
+                    self.refreshControl.endRefreshing()
+                }
+                
+        },
+            onError: {error in
+                print("Error from isLoading observable")
+                
+            }).disposed(by: disposeBag)
     }
     
     
