@@ -154,4 +154,26 @@ final class UserRepository {
         }
         
     }
+    
+    func addMovieToPlaylist(listId : Int, movieId : Int)->Observable<AddMovieToPlaylistResponse>{
+        return Observable.create{observer in
+            if let sessionId = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession){
+                let addMovieToPlaylistRequest = AddMovieToPlaylistRequest(sessionId: sessionId, movideId: movieId, listId: listId)
+                self.api.request(input: addMovieToPlaylistRequest).subscribe(
+                    onNext:{(response : AddMovieToPlaylistResponse)->Void in
+                        observer.onNext(response)
+                },
+                    onError: {
+                        observer.onError($0)
+                },
+                    onCompleted: {
+                        observer.onCompleted()
+                }).disposed(by: self.disposeBag)
+            } else {
+                observer.onError(BaseError.apiFailure(error: ErrorResponse()))
+            }
+            return Disposables.create()
+        }
+        
+    }
 }

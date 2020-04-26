@@ -7,13 +7,14 @@
 //
 
 import UIKit
-
+import RxSwift
 protocol MovieItemProtocol {
     func markItemAsFavorite(isAdd: Bool, id : Int, onCompleted: @escaping (Bool)->Void)
 }
 
-class BaseViewController: UIViewController, MovieItemProtocol {
+class BaseViewController: UIViewController, MovieItemProtocol{
     let refreshControl = UIRefreshControl()
+    let disposeBag = DisposeBag()
     
     func markItemAsFavorite(isAdd: Bool, id: Int, onCompleted: @escaping (Bool)->Void) {
         
@@ -22,10 +23,16 @@ class BaseViewController: UIViewController, MovieItemProtocol {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+//        addRefreshControlToView()
+        
+        // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
         addRefreshControlToView()
         refreshControl.addTarget(self, action: #selector(self.refreshData(sender:)), for: .valueChanged)
         refreshControl.attributedTitle = NSAttributedString(string: "Loading data...")
-        // Do any additional setup after loading the view.
+        
+        
     }
     @objc func refreshData(sender: Any){
         

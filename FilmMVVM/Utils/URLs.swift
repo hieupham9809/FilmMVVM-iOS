@@ -31,4 +31,6 @@ struct URLs {
     // MARK: PLAYLIST
     public static var getCreatedList = APIBaseUrl + "/account/{id}/lists"
     public static var createList = APIBaseUrl + "/list"
+    public static var getPlaylistDetail = APIBaseUrl + "/list/{id}"
+    public static var addMovieToPlaylist = APIBaseUrl + "/list/{id}/add_item"
 }

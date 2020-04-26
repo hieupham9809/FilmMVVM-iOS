@@ -41,7 +41,7 @@ class MovieDetailViewController: UIViewController, BindableType {
         
     }
     func bindViewModel() {
-        print(topBarHeight)
+        
         let movie = viewModel.getMovie()
         movie.asObservable().map{ movie -> String? in
             

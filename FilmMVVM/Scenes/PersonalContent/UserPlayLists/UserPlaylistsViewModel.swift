@@ -17,19 +17,21 @@ class UserPlaylistsViewModel {
     
     let userId : Int!
     
-    let moviePlaylists : BehaviorRelay<[Playlist]> = BehaviorRelay(value : [])
+    let moviePlaylists : BehaviorRelay<[Playlist]> = BehaviorRelay(value : [Playlist()])
     var currentPage = 0
     var totalPages = 1
     var totalResults = 0
     
     let userRepository = UserRepository()
+    let movieRepository = MovieRepository()
+    
     let disposeBag = DisposeBag()
     
     func resetState(){
         self.currentPage = 0
         self.totalResults = 0
         self.totalPages = 1
-        self.moviePlaylists.accept([])
+        self.moviePlaylists.accept([Playlist()])
     }
     
     required init(userId : Int) {
@@ -59,6 +61,16 @@ class UserPlaylistsViewModel {
                 self.isLoading.accept(false)
         }).disposed(by: self.disposeBag)
         
+        if let sessionId = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession), let userId = KeychainWrapper.standard.integer(forKey: Constants.keyAccessUserId){
+            let favoriteListRequest = UserFavoriteMovieListRequest(accountId: userId, sessionId: sessionId , page: 1)
+            movieRepository.getMovies(input: favoriteListRequest)
+                .subscribe(onNext: { response in
+                    var currentList = self.moviePlaylists.value
+                    currentList[0] = Playlist(itemCount: response.totalResults)
+                    self.moviePlaylists.accept(currentList)
+                    
+                }).disposed(by: disposeBag)
+        }
     }
     
     func createNewPlaylist(name : String, description: String){
@@ -79,5 +91,10 @@ class UserPlaylistsViewModel {
             onCompleted: {
                 self.isLoading.accept(false)
         }).disposed(by: self.disposeBag)
+    }
+    func logout()->Observable<LogoutResponse>{
+        
+        return userRepository.logout()
+        
     }
 }

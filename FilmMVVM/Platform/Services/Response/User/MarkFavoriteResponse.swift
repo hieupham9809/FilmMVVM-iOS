@@ -13,7 +13,7 @@ enum MarkResponse : Int {
     case success = 12
 }
 
-final class MarkFavoriteResponse : Mappable {
+class MarkFavoriteResponse : Mappable {
     var statusCode : Int = 0
     var statusMessage : String = ""
     required init(map : Map) {

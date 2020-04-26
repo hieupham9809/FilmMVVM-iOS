@@ -15,14 +15,19 @@ struct Playlist {
     var description : String
     var favoriteCount : Int
     var itemCount : Int
-    var id : String
+    var id : Int
     var items : [Movie]
     var posterPath : String?
 }
 
 extension Playlist {
     init(){
-        self.init(createdBy: "", name: "", description: "", favoriteCount: 0, itemCount: 0, id: "", items: [])
+        self.init(createdBy: "", name: "", description: "", favoriteCount: 0, itemCount: 0, id: -1000, items: [])
+    }
+    init(itemCount : Int){
+        self.init()
+        self.itemCount = itemCount
+        self.name = "My favorite"
     }
 }
 

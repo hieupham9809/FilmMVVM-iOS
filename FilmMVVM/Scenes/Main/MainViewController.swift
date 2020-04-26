@@ -20,7 +20,7 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
     var viewModel : MainViewModel!
     let rowIndexToLoadMore = 1
     let throttleIntervalMiliseconds = 3000
-    let disposeBag = DisposeBag()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,12 +59,61 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let add = UITableViewRowAction(style: .default, title: "Add"){(action, indexPath) in
+            self.addToPlaylist(index: indexPath.row)
+            
+        }
+        
+        return [add]
+    }
     func alertAndForceToLogin(){
-        let alert = UIAlertController(title: "Must Login!", message: "You must login to use this function!", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Must Login!", message: "You must login to use this functionality!", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {(alert : UIAlertAction!) in
             self.tabBarController?.selectedIndex = 1
         }))
         self.present(alert, animated: true, completion: nil)
+    }
+    func addToPlaylist(index : Int){
+        print("index: \(index)")
+        let addToPlaylistPopup = AddMovieToPlaylistViewController()
+        addToPlaylistPopup.modalPresentationStyle = .overCurrentContext
+        present(addToPlaylistPopup, animated: true)
+        addToPlaylistPopup.didSendBackPlaylistId = {[unowned self] playlistId in
+            if let movieId = self.viewModel?.movieList.value[safeIndex: index]?.id {
+                if (playlistId == -1000){
+                    
+                        self.markItemAsFavorite(isAdd: true, id: movieId, onCompleted: {(isSuccess: Bool)->Void in
+                            
+                        })
+                    
+                    
+                } else {
+                    self.viewModel?.addMovieToPlaylist(listId: playlistId, movieId: movieId).subscribe(
+                        onNext: { response in
+                        print("success: \(response.statusMessage)")
+                        self.showToast(message: "Added successfully", font: UIFont.systemFont(ofSize: 15))
+                    },
+                        onError: { error in
+                            print("error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")")
+                            self.showToast(message: "error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")", font: UIFont.systemFont(ofSize: 15))
+                            self.errorHandle(error: error)
+                    }).disposed(by: self.disposeBag)
+                }
+            }
+//            print("now we has movie id: \(self?.viewModel.movieList.value[index].id), and playlistid : \(playlistId)")
+            
+        }
+    }
+    func errorHandle(error : Error){
+        switch error {
+            case BaseError.apiFailure(let apiError):
+                if (apiError?.statusCode == ErrorStatusCode.not_authen.rawValue){
+                    self.alertAndForceToLogin()
+                }
+            default:
+                break
+            }
     }
     override func markItemAsFavorite(isAdd: Bool, id : Int, onCompleted: @escaping (Bool)->Void){
         guard let viewModel = self.viewModel else {return}
@@ -72,23 +121,24 @@ class MainViewController: BaseViewController, BindableType, UITableViewDelegate 
             onNext:{(markFavoriteResponse : MarkFavoriteResponse) in
                 print("success: \(markFavoriteResponse.statusMessage)")
                 let message = isAdd ? "Add to favorite " : "Remove from favorite"
-                self.showToast(message: "\(message) success!", font: UIFont.systemFont(ofSize: 18))
+                self.showToast(message: "\(message) success!", font: UIFont.systemFont(ofSize: 15))
                 onCompleted(true)
             
         },
             onError: { error in
                 print("error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")")
-                self.showToast(message: "error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")", font: UIFont.systemFont(ofSize: 18))
+                self.showToast(message: "error: \((error as? BaseError)?.errorMessage ?? "cannot unwrap message")", font: UIFont.systemFont(ofSize: 15))
                 onCompleted(false)
-                switch error {
-                case BaseError.apiFailure(let apiError):
-                    if (apiError?.statusCode == ErrorStatusCode.not_authen.rawValue){
-//                        self.tabBarController?.selectedIndex = 1
-                        self.alertAndForceToLogin()
-                    }
-                default:
-                    break
-                }
+                self.errorHandle(error: error)
+//                switch error {
+//                case BaseError.apiFailure(let apiError):
+//                    if (apiError?.statusCode == ErrorStatusCode.not_authen.rawValue){
+////                        self.tabBarController?.selectedIndex = 1
+//                        self.alertAndForceToLogin()
+//                    }
+//                default:
+//                    break
+//                }
                 
         }).disposed(by: self.disposeBag)
     }

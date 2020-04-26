@@ -15,7 +15,14 @@ enum Mode {
     case normal
     case search(String)
 }
-
+extension Array {
+    public subscript(safeIndex index: Int)->Element? {
+        guard index >= 0, index < endIndex else {
+            return nil
+        }
+        return self[index]
+    }
+}
 class MainViewModel {
     
     let isLoading : BehaviorRelay<Bool> = BehaviorRelay(value: false)
@@ -105,7 +112,7 @@ extension MainViewModel {
         print("request search more: ")
         let request = MovieSearchRequest(keyword: keywords, page: self.currentPage)
         let repository = MovieRepository()
-        repository.getSearchMovies(input: request).subscribe(onNext: {
+        repository.getMovies(input: request).subscribe(onNext: {
             movieResponse in
             self.movieList.accept(self.movieList.value + movieResponse.movies)
             self.totalPages = movieResponse.totalPages
@@ -114,5 +121,9 @@ extension MainViewModel {
             }).disposed(by: disposeBag)
         
         
+    }
+    
+    func addMovieToPlaylist(listId : Int, movieId : Int)->Observable<AddMovieToPlaylistResponse>{
+        return userRepository.addMovieToPlaylist(listId: listId, movieId: movieId)
     }
 }

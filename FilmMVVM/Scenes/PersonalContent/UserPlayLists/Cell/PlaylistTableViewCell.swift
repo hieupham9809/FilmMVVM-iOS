@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 
 class PlaylistCollectionViewCell: UICollectionViewCell {
-    var playlistId : String?
+//    var playlistId : String?
     let margin : CGFloat = 10.0
     var playlistName : UILabel = {
        let label = UILabel()
@@ -56,7 +56,7 @@ class PlaylistCollectionViewCell: UICollectionViewCell {
         playlistName.text = playlist.name
         playlistDescription.text = playlist.description
         itemCount.text = String("\(playlist.itemCount) \(playlist.itemCount > 1 ? "movies" : "movie")")
-        playlistId = playlist.id
+//        playlistId = playlist.id
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -96,9 +96,9 @@ class PlaylistCollectionViewCell: UICollectionViewCell {
             )
             
             itemCount.frame = CGRect(
-                x: playlistDescription.frame.maxX - 60,
+                x: playlistDescription.frame.maxX - 80,
                 y: playlistDescription.frame.maxY,
-                width: 60,
+                width: 80,
                 height: 10
             )
 

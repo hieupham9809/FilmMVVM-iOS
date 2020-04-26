@@ -20,12 +20,12 @@ class UserFavoriteListViewController: BaseViewController, BindableType, UITableV
     var viewModel : UserFavoriteListViewModel!
     let rowIndexToLoadMore = 1
     
-    let disposeBag = DisposeBag()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "My Favorite"
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(self.logoutHandle(sender:)))
+        
         
 //        searchController.hidesNavigationBarDuringPresentation = false
         let currentFrame = self.view.frame
@@ -85,20 +85,10 @@ class UserFavoriteListViewController: BaseViewController, BindableType, UITableV
                 
         }).disposed(by: self.disposeBag)
     }
-    @objc func logoutHandle(sender: UIButton){
-        guard let viewModel = self.viewModel else {return}
-        viewModel.logout().subscribe(
-            onNext: { (logoutResponse : LogoutResponse) in
-                print("logout success: \(logoutResponse.success)")
-                self.navigationController?.popViewController(animated: true)
-        }, onError: {
-            print("error: \(($0 as? BaseError)?.errorMessage ?? "cannot unwrap error")")
-            
-            }).disposed(by: disposeBag)
-    }
+    
     
     func bindViewModel() {
-        // bind data get from MainViewModel to View (TableView, ... )
+        // bind data get from  to View (TableView, ... )
         guard let viewModel = self.viewModel else {return}
         
         viewModel.getMovieList()

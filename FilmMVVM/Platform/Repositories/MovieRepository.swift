@@ -25,7 +25,20 @@ class MovieRepository : MovieRepositoryType {
                 return response
         }
     }
-    
+    func getMovies(input: MovieSearchRequest)->Observable<MovieResponse> {
+        api.request(input: input)
+            .map {(response: MovieResponse)->MovieResponse in
+                
+                return response
+        }
+    }
+    func getMovies(input: UserFavoriteMovieListRequest)->Observable<MovieResponse> {
+        api.request(input: input)
+            .map {(response: MovieResponse)->MovieResponse in
+                
+                return response
+        }
+    }
     func getFavoriteMovies(input: UserFavoriteMovieListRequest)-> Observable<MovieResponse> {
         api.request(input: input)
             .map{(response: MovieResponse)->MovieResponse in
@@ -38,6 +51,12 @@ class MovieRepository : MovieRepositoryType {
             .map{(response: MovieResponse)->MovieResponse in
                 return response
                 
+        }
+    }
+    
+    func getPlaylistDetail(input: PlaylistDetailRequest)->Observable<Playlist> {
+        api.request(input: input).map{(response : Playlist) in
+            return response
         }
     }
 }

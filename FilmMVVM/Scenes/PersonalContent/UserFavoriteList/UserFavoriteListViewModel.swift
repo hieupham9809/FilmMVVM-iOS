@@ -14,28 +14,27 @@ import SwiftKeychainWrapper
 
 class UserFavoriteListViewModel {
     let id : Int!
-    let sessionId : String?
+    
     let isLoading : BehaviorRelay<Bool> = BehaviorRelay(value: false)
     let movieList : BehaviorRelay<[Movie]> = BehaviorRelay(value: [])
     let userRepository = UserRepository()
+    let movieRepository = MovieRepository()
     var currentPage = 0
     var totalPages = 1
     var totalResults = 0
     let disposeBag = DisposeBag()
     
-    required init(id : Int) {
+    init(id : Int) {
         self.id = id
-        self.sessionId = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession)
+        
     }
+    
     func resetState(){
         self.movieList.accept([])
         self.currentPage = 0
         self.totalPages = 1
         self.totalResults = 0
     }
-}
-
-extension UserFavoriteListViewModel {
     
     // get Observable from MovieRepository and send to MainViewController
     func getMovieList(){
@@ -43,18 +42,18 @@ extension UserFavoriteListViewModel {
         if self.currentPage == self.totalPages {
             return
         }
-        guard let sessionId = self.sessionId else {
+        guard let sessionId = KeychainWrapper.standard.string(forKey: Constants.keyAccessSession) else {
             print("error: sessionId not exist")
             return
             
         }
         
         self.currentPage += 1
-        print("request more: ")
-        let request = UserFavoriteMovieListRequest(accountId: self.id, sessionId: sessionId, page: self.currentPage)
-        let repository = MovieRepository()
         
-        repository.getFavoriteMovies(input: request).subscribe(
+        let request = UserFavoriteMovieListRequest(accountId: self.id, sessionId: sessionId, page: self.currentPage)
+        
+        
+        movieRepository.getFavoriteMovies(input: request).subscribe(
             onNext: { movieResponse in
                 self.movieList.accept(self.movieList.value + movieResponse.movies)
     //            print(self.movieList.value)
@@ -69,6 +68,11 @@ extension UserFavoriteListViewModel {
         
        
     }
+}
+
+extension UserFavoriteListViewModel {
+    
+    
     
     func logout()->Observable<LogoutResponse>{
         let userRepository = UserRepository()

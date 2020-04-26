@@ -9,21 +9,48 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import SwiftKeychainWrapper
 
 class UserPlaylistsViewController: BaseViewController, BindableType {
     var playlistCollectionView : UICollectionView!
     var viewModel: UserPlaylistsViewModel! = nil
-    let disposeBag = DisposeBag()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.createPlaylistHandle(sender:)))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(self.logoutHandle(sender:)))
         self.layoutItems()
         // Do any additional setup after loading the view.
     }
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         guard let viewModel = self.viewModel else {return}
         viewModel.getCreatedPlaylists()
+    }
+    override func addRefreshControlToView() {
+        if #available(iOS 10.0, *){
+            
+            playlistCollectionView?.refreshControl = refreshControl
+        } else {
+            playlistCollectionView?.addSubview(refreshControl)
+        }
+    }
+    @objc override func refreshData(sender: Any){
+        guard let viewModel = self.viewModel else {return}
+        viewModel.resetState()
+        viewModel.getCreatedPlaylists()
+    }
+    @objc func logoutHandle(sender: UIButton){
+        guard let viewModel = self.viewModel else {return}
+        viewModel.logout().subscribe(
+            onNext: { (logoutResponse : LogoutResponse) in
+                print("logout success: \(logoutResponse.success)")
+                self.navigationController?.popViewController(animated: true)
+        }, onError: {
+            print("error: \(($0 as? BaseError)?.errorMessage ?? "cannot unwrap error")")
+            
+            }).disposed(by: disposeBag)
     }
     func layoutItems(){
         let layout = UICollectionViewFlowLayout()
@@ -42,6 +69,29 @@ class UserPlaylistsViewController: BaseViewController, BindableType {
             
         }.disposed(by: disposeBag)
         
+        playlistCollectionView.rx.modelSelected(Playlist.self).map{
+            $0.id
+        }.subscribe(onNext: {[weak self] id in
+            print("id \(id)")
+            if (id == -1000){
+                guard let userId = KeychainWrapper.standard.integer(forKey: Constants.keyAccessUserId) else {
+                    print("Error: userId not exist")
+                    return
+                }
+                let userFavoriteVC = self?.storyboard?.instantiateViewController(withIdentifier: "UserFavorite") as! UserFavoriteListViewController
+                let userFavoriteViewModel = UserFavoriteListViewModel(id: userId)
+                
+                userFavoriteVC.bindViewModel(to: userFavoriteViewModel)
+                self?.navigationController?.pushViewController(userFavoriteVC, animated: true)
+            } else {
+                let playlistDetailVC = self?.storyboard?.instantiateViewController(withIdentifier: "PlaylistDetailVC") as! PlaylistDetailsViewController
+                let playlistDetailViewModel = PlaylistDetailsViewModel(id: id)
+                playlistDetailVC.bindViewModel(to: playlistDetailViewModel)
+                self?.navigationController?.pushViewController(playlistDetailVC, animated: true)
+            }
+            
+            }).disposed(by: disposeBag)
+        
         viewModel.isCreatePlaylistSuccess.asObservable().subscribe(
             onNext: { isSuccess in
                 guard let isSuccess = isSuccess else {return}
@@ -52,12 +102,28 @@ class UserPlaylistsViewController: BaseViewController, BindableType {
                 
             }
         ).disposed(by: disposeBag)
+        
+        // MARK: Loading indicator
+        viewModel.isLoading.asObservable().subscribe(
+            onNext: {
+                if ($0){
+                    
+                } else {
+                    self.refreshControl.endRefreshing()
+                }
+                
+        },
+            onError: {error in
+                print("Error from isLoading observable")
+                
+            }).disposed(by: disposeBag)
     }
     @objc func createPlaylistHandle(sender: UIButton){
         let alert = UIAlertController(title: "Create New Playlist", message: "", preferredStyle: .alert)
         alert.addTextField{ textField in
             textField.placeholder = "playlist 0"
         }
+        
         alert.addTextField{ textField in
             textField.placeholder = "description..."
         }
